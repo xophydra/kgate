@@ -9,13 +9,11 @@ echo "== kallsyms"; head -2 /proc/kallsyms 2>&1
 echo "== modules"; head -3 /proc/modules 2>&1
 echo "== py"
 python3 - <<'PY'
-import socket,ctypes,os
-libc=ctypes.CDLL(None)
+import socket,ctypes,os,struct
+libc=ctypes.CDLL(None,use_errno=True)
 p=ctypes.create_string_buffer(120)
-r=libc.syscall(425,8,ctypes.byref(p))
-print('io_uring_setup',r, 'errno',ctypes.get_errno() if hasattr(ctypes,'get_errno') else '')
-libc.errno=0
-r=libc.syscall(425,8,ctypes.byref(p)); print('io_uring_setup2',r,'errno',libc.errno)
+r=libc.syscall(425,8,ctypes.byref(p)); print('io_uring_setup',r,'errno',libc.errno)
+
 # keyring with proper spec
 KS=-4
 k=libc.syscall(248,b"user",b"probe",ctypes.c_void_p(5),ctypes.c_int(KS))
@@ -37,7 +35,7 @@ ok=0
 for i in range(500):
     try:
         a,b=socket.socketpair(socket.AF_UNIX,socket.SOCK_STREAM)
-        a.send(b'x',socket.ANCILLARY_DATA,[socket.fromfd(b.fileno(),socket.AF_UNIX,socket.SOCK_STREAM)])
+        a.sendmsg([b'x'],[(socket.SOL_SOCKET,socket.SCM_RIGHTS,struct.pack('@i',b.fileno()))])
         a.close(); b.close(); ok+=1
     except Exception as e: break
 print('af_unix scm loops',ok)
