@@ -1,0 +1,84 @@
+
+== identity
+pid 8 uid 0 euid 0
+CapEff:	00000000800405fb
+NoNewPrivs:	0
+Seccomp:	2
+Seccomp_filters:	1
+Cpus_allowed_list:	0-31
+
+== cpu
+online=32 nproc_sysconf=32
+affinity mask count=32
+setaffinity{0,1} rc=0 errno=0(Success)
+cp="
+"
+
+== memory ceiling
+/sys/fs/cgroup/memory.max = max
+
+/sys/fs/cgroup/memory.high = max
+
+/sys/fs/cgroup/memory.current = 6565888
+
+/sys/fs/cgroup/cpu.max = max 100000
+
+MemTotal:       193105796 kB
+MemAvailable:   93812564 kB
+
+== alloc ladder
+128 MiB OK
+256 MiB OK
+512 MiB OK
+1024 MiB OK
+2048 MiB OK
+
+== io_uring
+io_uring_setup rc=-1 errno=38(Function not implemented)
+
+== keyring
+add_key rc=-1 errno=38(Function not implemented)
+/proc/keys open rc=3 errno=38
+
+== af_unix geometry (bounded, no GC storm)
+scm_rights sends ok=500 errno=38
+unix bind tmp rc=0 errno=38
+
+== IP_OPTIONS arm to metal sshd
+192.168.32.1 none connect timeout
+192.168.32.1 RR   connect timeout
+172.31.0.1 none connect timeout
+172.31.0.1 RR   connect timeout
+147.5.115.161 none so_error=0 recv=43 banner="SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
+" retopts_get=0 len=4 bytes=01000000
+147.5.115.161 RR   connect timeout
+
+== btf / lockdown / sysctls
+btf read n=8 magic=9feb
+lockdown open errno=2
+/proc/sys/kernel/kptr_restrict = 0
+
+   writability: no
+/proc/sys/kernel/dmesg_restrict = 1
+
+   writability: no
+/proc/sys/kernel/io_uring_disabled = 0
+
+   writability: no
+/proc/sys/kernel/modules_disabled = 0
+
+   writability: no
+/proc/sys/kernel/perf_event_paranoid = 2
+
+   writability: no
+/proc/sys/net/ipv4/tcp_migrate_req = 0
+
+   writability: no
+/proc/sys/net/ipv4/ip_unprivileged_port_start = 1024
+
+   writability: no
+
+== unshare / userns
+unshare(CLONE_NEWUSER|CLONE_NEWNS) rc=0 errno=30(Read-only file system)
+
+== done
